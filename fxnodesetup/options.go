@@ -1,4 +1,4 @@
-package fx
+package fxnodesetup
 
 import (
 	"reflect"
@@ -49,37 +49,37 @@ func If(b bool, opts ...Option) Option {
 // Override option changes constructor for a given type
 func Override(typ, constructor interface{}) Option {
 	return func(s *Settings) error {
-		if i, ok := typ.(invoke); ok {
-			s.invokes[i] = fx.Invoke(constructor)
+		if i, ok := typ.(Invoke); ok {
+			s.Invokes[i] = fx.Invoke(constructor)
 			return nil
 		}
 
-		if c, ok := typ.(special); ok {
-			s.modules[c] = fx.Provide(constructor)
+		if c, ok := typ.(Special); ok {
+			s.Modules[c] = fx.Provide(constructor)
 			return nil
 		}
 		ctor := as(constructor, typ)
 		rt := reflect.TypeOf(typ).Elem()
 
-		s.modules[rt] = fx.Provide(ctor)
+		s.Modules[rt] = fx.Provide(ctor)
 		return nil
 	}
 }
 
 func Unset(typ interface{}) Option {
 	return func(s *Settings) error {
-		if i, ok := typ.(invoke); ok {
-			s.invokes[i] = nil
+		if i, ok := typ.(Invoke); ok {
+			s.Invokes[i] = nil
 			return nil
 		}
 
-		if c, ok := typ.(special); ok {
-			delete(s.modules, c)
+		if c, ok := typ.(Special); ok {
+			delete(s.Modules, c)
 			return nil
 		}
 		rt := reflect.TypeOf(typ).Elem()
 
-		delete(s.modules, rt)
+		delete(s.Modules, rt)
 		return nil
 	}
 }
